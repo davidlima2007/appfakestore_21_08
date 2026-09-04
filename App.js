@@ -1,8 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import {useEffect, useState} from 'react'
-import { StyleSheet, Text, View } from 'react-native';
-import { Exception } from 'react-native/types_generated/Libraries/ReactPrivate/ReactNativePrivateInterface';
-export default function App() {
+import {useState, useEffect} from 'react'
+import { StyleSheet, Text, View, Image, FlatList } from 'react-native';
+
+  export default function App() {
 
   const [dados, setDados] = useState([])
 
@@ -12,42 +12,54 @@ export default function App() {
     if (resposta.status == 200) {
       let novosDados = await resposta.json();
       setDados(novosDados);
-
     }
-    else{
-      throw Exception("falha no carregamento de dados");
-    }
+    else {
+      throw Exception("Falha no carregamento de dados");
+      }
     }
     catch (e) {
       console.log(e)
       throw Exception("Falha no carregamento de dados")
     }
+   }
 
- }
-
-    useEffect(()=>{
+    useEffect(() => {
     carregaProdutos()
-    },[]);
+    }, []);
 
-
-  return (
+    return (
     <View style={styles.container}>
       <Text>Open up App.js to start working on your app!</Text>
-      <View style={styles.container}>
-      {dados.map((item)=>
-      <Text>{item.title}</Text>
-      )}
-      </View>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+      <FlatList
+      style={{ width: '100%' }}
+      data={dados}
+      keyExtractor={(item)=>item.id.tostring()}
+      renderItem={({ item })=>(
+      <View style={styles.card}>
+      <Image source={{ uri: item.image }} style={{ width: 50, height: 50}} />
+      <Text>{item.title}</Text>
+      <Text>{item.price}</Text>
+      </View>
+      
+      )}
+      />
+      <StatusBar style="auto" />
+      </View>
+    );
+  }
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    card: {
+      flexDirection: 'column',
+      elevation:8,
+      padding: 16,
+      width:'100%'
+    }
+  });
